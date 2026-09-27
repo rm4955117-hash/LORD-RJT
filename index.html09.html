@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LORD RAJAT (RJT) | rajatsmm.site</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Courier New', monospace; }
+  html, body { height:100%; background:#000; color:#0f0; overflow-x:hidden; }
+  body { position:relative; }
+
+  #matrix { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; opacity:0.28; }
+
+  .scanlines {
+    position:fixed; top:0; left:0; width:100%; height:100%; z-index:1;
+    background:repeating-linear-gradient(
+      to bottom,
+      rgba(0,255,0,0.03) 0px, rgba(0,255,0,0.03) 1px,
+      transparent 1px, transparent 3px
+    );
+    pointer-events:none;
+  }
+
+  .container {
+    position:relative; z-index:2;
+    padding:50px 20px 80px;
+    max-width:950px; margin:auto; text-align:center;
+  }
+
+  .glitch {
+    font-size:3em; font-weight:bold; color:#0f0;
+    text-shadow:0 0 10px #0f0, 0 0 20px #0f0, 0 0 40px #0f0;
+    animation:flicker 1.5s infinite alternate; letter-spacing:3px;
+  }
+  @keyframes flicker {
+    0% { opacity:1; text-shadow:0 0 10px #0f0, 0 0 30px #0f0; }
+    50% { opacity:0.85; text-shadow:0 0 5px #0f0; }
+    100% { opacity:1; text-shadow:0 0 20px #0f0, 0 0 50px #0f0; }
+  }
+  .subtitle { color:#0f0; margin-top:12px; font-size:0.95em; letter-spacing:4px; opacity:0.85; }
+
+  .terminal {
+    background:rgba(0,0,0,0.85);
+    border:1px solid #0f0;
+    box-shadow:0 0 15px #0f0, inset 0 0 20px rgba(0,255,0,0.08);
+    padding:20px; margin:35px 0; text-align:left;
+    font-size:0.95em; border-radius:6px; min-height:140px;
+  }
+  .terminal p { margin:6px 0; white-space:pre-wrap; }
+  .cursor {
+    display:inline-block; width:10px; height:16px;
+    background:#0f0; vertical-align:middle;
+    animation:blink 1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity:0; } }
+
+  h2 {
+    color:#0f0; margin:35px 0 18px;
+    text-shadow:0 0 8px #0f0; letter-spacing:3px; font-size:1.3em;
+  }
+
+  .grid {
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(190px,1fr));
+    gap:15px; margin-bottom:25px;
+  }
+  .card {
+    border:1px solid #0f0; padding:15px; border-radius:6px;
+    background:rgba(0,20,0,0.6);
+    box-shadow:0 0 10px rgba(0,255,0,0.4);
+    transition:0.3s; text-align:left; font-size:0.9em; cursor:pointer;
+  }
+  .card:hover {
+    background:rgba(0,255,0,0.15);
+    box-shadow:0 0 25px #0f0; transform:scale(1.04);
+  }
+  .card b { color:#0f0; display:block; margin-bottom:4px; }
+  .card small { color:#0a0; }
+
+  .btn {
+    display:inline-block; margin:8px; padding:12px 24px;
+    border:1px solid #0f0; color:#0f0; text-decoration:none;
+    border-radius:4px; box-shadow:0 0 10px #0f0;
+    transition:0.3s; font-weight:bold; letter-spacing:1px;
+  }
+  .btn:hover { background:#0f0; color:#000; box-shadow:0 0 30px #0f0; }
+
+  .footer { margin-top:50px; font-size:0.85em; opacity:0.7; letter-spacing:2px; }
+
+  .warning {
+    color:#f00; text-shadow:0 0 8px #f00;
+    border:1px dashed #f00; padding:12px;
+    margin:25px 0; font-size:0.85em; border-radius:6px;
+    animation:warnPulse 2s infinite;
+  }
+  @keyframes warnPulse {
+    0%,100% { box-shadow:0 0 8px #f00; }
+    50% { box-shadow:0 0 22px #f00; }
+  }
+
+  /* ===== LOGIN POPUP ===== */
+  #loginPopup {
+    position:fixed; inset:0; z-index:100;
+    background:rgba(0,0,0,0.95);
+    display:flex; align-items:center; justify-content:center; padding:20px;
+  }
+  .login-box {
+    width:100%; max-width:420px;
+    border:1px solid #0f0; border-radius:8px;
+    background:rgba(0,10,0,0.95);
+    box-shadow:0 0 25px #0f0, inset 0 0 25px rgba(0,255,0,0.08);
+    padding:28px 22px; text-align:left;
+  }
+  .login-box h3 {
+    color:#0f0; text-align:center; letter-spacing:4px;
+    text-shadow:0 0 10px #0f0; margin-bottom:8px; font-size:1.2em;
+  }
+  .login-box .sub {
+    text-align:center; color:#0a0; font-size:0.78em;
+    letter-spacing:2px; margin-bottom:20px;
+  }
+  .login-box label { color:#0a0; font-size:0.85em; letter-spacing:1px; }
+  .login-box input {
+    width:100%; padding:11px 12px; margin:6px 0 14px;
+    background:#000; border:1px solid #0f0; color:#0f0;
+    font-family:'Courier New', monospace; font-size:0.95em;
+    border-radius:4px; outline:none;
+    box-shadow:inset 0 0 10px rgba(0,255,0,0.15);
+  }
+  .login-box input:focus { box-shadow:0 0 15px #0f0; }
+  .login-box button {
+    width:100%; padding:12px; cursor:pointer;
+    background:#0f0; color:#000; border:none;
+    font-weight:bold; letter-spacing:3px;
+    font-family:'Courier New', monospace; font-size:1em;
+    border-radius:4px; transition:0.3s;
+  }
+  .login-box button:hover { box-shadow:0 0 30px #0f0; letter-spacing:5px; }
+
+  #loginMsg {
+    margin-top:14px; font-size:0.85em; color:#f00;
+    text-align:center; min-height:18px; text-shadow:0 0 8px #f00;
+  }
+  .success { color:#0f0 !important; text-shadow:0 0 10px #0f0 !important; }
+
+  .locked { filter:blur(6px); pointer-events:none; user-select:none; }
+
+  #soundPrompt {
+    position:fixed; bottom:20px; right:20px; z-index:200;
+    background:rgba(0,0,0,0.9); border:1px solid #0f0;
+    color:#0f0; padding:10px 16px; border-radius:4px;
+    font-size:0.8em; letter-spacing:1px;
+    box-shadow:0 0 15px #0f0; cursor:pointer; display:none;
+  }
+  #soundPrompt:hover { background:#0f0; color:#000; }
+
+  /* ===== HACK PROGRESS SCREEN ===== */
+  #hackScreen {
+    position:fixed; inset:0; z-index:150;
+    background:rgba(0,0,0,0.97);
+    display:none; align-items:center; justify-content:center; padding:20px;
+  }
+  .hack-box {
+    width:100%; max-width:560px;
+    border:1px solid #0f0; border-radius:8px;
+    background:rgba(0,10,0,0.95);
+    box-shadow:0 0 30px #0f0, inset 0 0 30px rgba(0,255,0,0.08);
+    padding:26px 22px;
+  }
+  .hack-box h3 {
+    color:#0f0; text-align:center; letter-spacing:4px;
+    text-shadow:0 0 12px #0f0; margin-bottom:18px; font-size:1.1em;
+  }
+  .bar-wrap {
+    width:100%; height:22px; border:1px solid #0f0;
+    border-radius:4px; overflow:hidden;
+    background:#000; box-shadow:inset 0 0 10px rgba(0,255,0,0.2);
+  }
+  #barFill {
+    height:100%; width:0%;
+    background:linear-gradient(90deg,#0f0,#8f8,#0f0);
+    box-shadow:0 0 15px #0f0;
+    transition:width 0.15s linear;
+    background-size:200% 100%;
+    animation:barGlow 1.2s linear infinite;
+  }
+  @keyframes barGlow {
+    0% { background-position:0% 0; }
+    100% { background-position:200% 0; }
+  }
+  #barPercent {
+    text-align:right; margin-top:8px;
+    color:#0f0; font-size:0.9em; letter-spacing:2px;
+    text-shadow:0 0 8px #0f0;
+  }
+  #hackLog {
+    margin-top:16px; height:170px; overflow-y:auto;
+    background:#000; border:1px solid #0a0; border-radius:4px;
+    padding:10px 12px; font-size:0.82em; color:#0f0;
+    text-align:left; line-height:1.5;
+  }
+  #hackLog div { white-space:pre-wrap; }
+  #hackLog::-webkit-scrollbar { width:6px; }
+  #hackLog::-webkit-scrollbar-thumb { background:#0f0; border-radius:3px; }
+
+  @media (max-width:600px) {
+    .glitch { font-size:2em; }
+    .subtitle { font-size:0.75em; letter-spacing:2px; }
+    .hack-box h3 { font-size:0.95em; letter-spacing:2px; }
+    #hackLog { height:140px; font-size:0.75em; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="matrix"></canvas>
+<div class="scanlines"></div>
+
+<div id="soundPrompt">🔊 TAP FOR HACKER SOUND</div>
+
+<!-- Background Music (hidden) -->
+<audio id="bgMusic" loop preload="auto">
+  <source src="hacker-music.mp3" type="audio/mpeg">
+  <!-- এখানে তোমার মিউজিক ফাইলের নাম বসাও -->
+</audio>
+
+<!-- ================= HACK PROGRESS SCREEN ================= -->
+<div id="hackScreen">
+  <div class="hack-box">
+    <h3>[ INITIATING HACK SEQUENCE ]</h3>
+    <div class="bar-wrap"><div id="barFill"></div></div>
+    <div id="barPercent">0%</div>
+    <div id="hackLog"></div>
+  </div>
+</div>
+
+<!-- ================= LOGIN POPUP ================= -->
+<div id="loginPopup">
+  <div class="login-box">
+    <h3>[ ACCESS TERMINAL ]</h3>
+    <p class="sub">LORD RAJAT (RJT) • SECURE GATEWAY</p>
+
+    <label>USERNAME :</label>
+    <input type="text" id="username" placeholder="enter username" autocomplete="off">
+
+    <label>PASSWORD :</label>
+    <input type="password" id="password" placeholder="enter password">
+
+    <button onclick="tryLogin()">▶ CONNECT</button>
+    <div id="loginMsg"></div>
+  </div>
+</div>
+
+<!-- ================= MAIN CONTENT ================= -->
+<div class="container locked" id="mainContent">
+  <h1 class="glitch">LORD RAJAT (RJT)</h1>
+  <p class="subtitle">[ rajatsmm.site • ETHICAL HACKER • TECH LOVER ]</p>
+
+  <div class="terminal" id="terminalBox">
+    <p>C:\Users\RJT&gt; <span id="typed"></span><span class="cursor"></span></p>
+  </div>
+
+  <h2>⚡ TOOLS &amp; APKS ⚡</h2>
+  <div class="grid">
+    <div class="card"><b>Termux</b><small>Android Linux Terminal</small></div>
+    <div class="card"><b>Kali NetHunter</b><small>Mobile Pentesting</small></div>
+    <div class="card"><b>Nmap</b><small>Network Scanner</small></div>
+    <div class="card"><b>Wireshark</b><small>Packet Analyzer</small></div>
+    <div class="card"><b>Burp Suite</b><small>Web Security</small></div>
+    <div class="card"><b>Metasploit</b><small>Pen Testing Framework</small></div>
+    <div class="card"><b>Hydra</b><small>Login Cracker (Lab)</small></div>
+    <div class="card"><b>John the Ripper</b><small>Password Auditor</small></div>
+  </div>
+
+  <h2>🤖 AI HELPFUL MODS 🤖</h2>
+  <div class="grid">
+    <div class="card"><b>ChatGPT Mod</b><small>AI Assistant</small></div>
+    <div class="card"><b>DeepSeek AI</b><small>Smart Coding Help</small></div>
+    <div class="card"><b>CapCut Mod</b><small>Video Editing</small></div>
+    <div class="card"><b>PicsArt Mod</b><small>Photo Editing</small></div>
+  </div>
+
+  <div class="warning">
+    ⚠️ LORD HACKER RAJAT ALL SERVER UNLOCKED • DM BY LORD SERVICE
+  </div>
+
+  <h2>📡 CONTACT ME 📡</h2>
+  <a class="btn" href="https://wa.me/224655411007" target="_blank">💬 WhatsApp</a>
+  <a class="btn" href="https://t.me/lordrajat12" target="_blank">✈️ Telegram</a>
+  <a class="btn" href="https://t.me/rajatsmm" target="_blank">📢 Telegram Channel</a>
+
+  <div class="footer">
+    © 2025 LORD RAJAT (RJT) • rajatsmm.site • ALL RIGHTS RESERVED
+  </div>
+</div>
+
+<script>
+/* ============ MATRIX RAIN ============ */
+const canvas = document.getElementById('matrix');
+const ctx = canvas.getContext('2d');
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+const chars = "アカサタナハマヤラワ0123456789ABCDEFRJT<>/{}[]#$%&".split("");
+const fontSize = 16;
+let columns = canvas.width / fontSize;
+let drops = Array(Math.floor(columns)).fill(1);
+
+function draw() {
+  ctx.fillStyle = "rgba(0,0,0,0.06)";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = "#0f0";
+  ctx.font = fontSize + "px monospace";
+  for (let i=0; i<drops.length; i++) {
+    const t = chars[Math.floor(Math.random()*chars.length)];
+    ctx.fillText(t, i*fontSize, drops[i]*fontSize);
+    if (drops[i]*fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
+  }
+}
+setInterval(draw, 50);
+window.addEventListener('resize', () => {
+  resizeCanvas();
+  columns = canvas.width / fontSize;
+  drops = Array(Math.floor(columns)).fill(1);
+});
+
+/* ============ HACKER SOUND (WebAudio) ============ */
+let audioCtx = null;
+let soundEnabled = false;
+function initAudio() {
+  if (audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+}
+function beep(freq=880, dur=0.05, type='square', vol=0.05) {
+  if (!soundEnabled || !audioCtx) return;
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.type = type; o.frequency.value = freq;
+  g.gain.value = vol;
+  o.connect(g); g.connect(audioCtx.destination);
+  o.start();
+  g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+  o.stop(audioCtx.currentTime + dur);
+}
+function hackingLoop() {
+  if (!soundEnabled) return;
+  beep(1200 + Math.random()*800, 0.03, 'square', 0.02);
+  setTimeout(hackingLoop, 80 + Math.random()*220);
+}
+
+/* ============ BACKGROUND MUSIC ============ */
+const bgMusic = document.getElementById('bgMusic');
+bgMusic.volume = 0.25;   // চাইলে ভলিউম বদলাও (0.0 - 1.0)
+
+function playBgMusic() {
+  bgMusic.play().catch(err => {
+    console.log("Music autoplay blocked:", err);
+  });
+}
+
+function enableSound() {
+  initAudio();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  soundEnabled = true;
+  document.getElementById('soundPrompt').style.display = 'none';
+  hackingLoop();
+  playBgMusic();
+}
+
+/* ============ LOGIN LOGIC ============ */
+const VALID_USER = "LORD RAJAT";
+const VALID_PASS = "RJT2025";
+
+function tryLogin() {
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value.trim();
+  const msg = document.getElementById('loginMsg');
+
+  msg.className = '';
+  msg.textContent = "> connecting to server...";
+
+  initAudio();
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  beep(600, 0.08, 'square', 0.04);
+
+  setTimeout(() => {
+    if (u.toUpperCase() === VALID_USER && p === VALID_PASS) {
+      msg.className = 'success';
+      msg.textContent = "> ACCESS GRANTED ✔ INITIATING SEQUENCE";
+      beep(1500, 0.15, 'sine', 0.06);
+
+      // Enable sound + start music (user gesture happened)
+      enableSound();
+
+      setTimeout(() => {
+        document.getElementById('loginPopup').style.display = 'none';
+        startHackSequence();   // 👈 progress bar চালু
+      }, 900);
+    } else {
+      msg.textContent = "> ACCESS DENIED ✖ WRONG CREDENTIALS";
+      beep(180, 0.25, 'sawtooth', 0.06);
+    }
+  }, 600);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('loginPopup').style.display !== 'none') {
+    tryLogin();
+  }
+});
+
+/* ============ FAKE HACK PROGRESS BAR ============ */
+const hackSteps = [
+  "> Initializing exploit framework...",
+  "> Scanning target IP range...",
+  "> Connecting to remote server...",
+  "> Bypassing firewall [✓]",
+  "> Injecting payload...",
+  "> Cracking encryption (AES-256)...",
+  "> Decrypting database...",
+  "> Extracting credentials...",
+  "> Covering tracks...",
+  "> Cleaning logs...",
+  "> ACCESS GRANTED ✔",
+  "> WELCOME LORD RAJAT"
+];
+
+function startHackSequence() {
+  const screen = document.getElementById('hackScreen');
+  const bar = document.getElementById('barFill');
+  const pct = document.getElementById('barPercent');
+  const log = document.getElementById('hackLog');
+
+  screen.style.display = 'flex';
+  log.innerHTML = "";
+  bar.style.width = "0%";
+  pct.textContent = "0%";
+
+  let progress = 0;
+  let stepIndex = 0;
+
+  const interval = setInterval(() => {
+    // Progress বাড়াও (random ধীরে)
+    progress += Math.random() * 3 + 1;
+    if (progress > 100) progress = 100;
+
+    bar.style.width = progress + "%";
+    pct.textContent = Math.floor(progress) + "%";
+
+    // Progress অনুযায়ী step দেখাও
+    const targetStep = Math.floor((progress / 100) * hackSteps.length);
+    while (stepIndex < targetStep && stepIndex < hackSteps.length) {
+      const d = document.createElement('div');
+      d.textContent = hackSteps[stepIndex];
+      log.appendChild(d);
+      log.scrollTop = log.scrollHeight;
+      beep(1400 + Math.random()*400, 0.02, 'square', 0.02);
+      stepIndex++;
+    }
+
+    if (progress >= 100) {
+      clearInterval(interval);
+
+      // শেষ মেসেজ
+      const d = document.createElement('div');
+      d.textContent = "> SYSTEM UNLOCKED ✔ ENTERING...";
+      log.appendChild(d);
+      log.scrollTop = log.scrollHeight;
+
+      beep(1800, 0.4, 'sine', 0.08);
+
+      setTimeout(() => {
+        screen.style.display = 'none';
+        document.getElementById('mainContent').classList.remove('locked');
+        startTyping();
+      }, 1300);
+    }
+  }, 120);
+}
+
+/* ============ TYPING ANIMATION ============ */
+const lines = [
+  "whoami",
+  "> LORD_RAJAT",
+  "status",
+  "> ONLINE • LEARNING • BUILDING",
+  "location",
+  "> rajatsmm.site",
+  "access",
+  "> GRANTED ✔"
+];
+
+function startTyping() {
+  const target = document.getElementById('typed');
+  let li = 0, ci = 0, output = "";
+
+  function typeChar() {
+    if (li >= lines.length) return;
+    const line = lines[li];
+    if (ci < line.length) {
+      output += line[ci];
+      target.textContent = output;
+      if (soundEnabled) beep(2000, 0.01, 'square', 0.01);
+      ci++;
+      setTimeout(typeChar, 40);
+    } else {
+      output += "\n";
+      target.textContent = output;
+      li++; ci = 0;
+      setTimeout(typeChar, 350);
+    }
+  }
+  typeChar();
+}
+
+/* ============ SOUND PROMPT CLICK ============ */
+document.getElementById('soundPrompt').addEventListener('click', enableSound);
+</script>
+
+</body>
+</html>
